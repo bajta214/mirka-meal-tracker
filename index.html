@@ -1432,7 +1432,7 @@ Vráť IBA JSON (bez markdown):
 {"name":"","ingredients":[{"name":"","amount":0}],"kcal":0,"protein":0,"carbs":0,"fat":0,"fiber":0,"satfat":0,"sugar":0,"salt":0,"iron":0,"calcium":0,"magnesium":0,"potassium":0,"omega3":0,"vitc":0,"vitd":0,"cholesterol":0}`;
 
   try {
-    const resp = await fetch('https://mirka-proxy.bajtosova.workers.dev', {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
       mode:'cors',
       credentials:'omit',
@@ -1482,7 +1482,7 @@ async function runAIMeal() {
     let content=[];
     if(photoFile) {
       btn.textContent='⏳ Zmenšujem foto...';
-      const img = await resizeImage(photoFile);
+      const img = await resizeImage(photoFile, 512, 0.60);
       content.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:img.b64}});
       btn.textContent='⏳ Analyzujem...';
     }
@@ -1497,7 +1497,7 @@ Vráť IBA JSON objekt (bez markdown, bez komentárov):
 {"name":"","amount":null,"kcal":0,"protein":0,"carbs":0,"fat":0,"fiber":0,"satfat":0,"sugar":0,"salt":0,"iron":0,"calcium":0,"magnesium":0,"potassium":0,"omega3":0,"vitc":0,"vitd":0,"cholesterol":0}
 Všetky číselné hodnoty musia byť čísla. "name" má byť slovenský názov jedla.`;
     content.push({type:'text',text:prompt});
-    const resp=await fetch('https://mirka-proxy.bajtosova.workers.dev',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:600,messages:[{role:'user',content}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:600,messages:[{role:'user',content}]})});
     if(!resp.ok) {
       const err=await resp.json().catch(()=>({}));
       throw new Error(`API ${resp.status}: ${err?.error?.message||resp.statusText}`);
@@ -1904,7 +1904,7 @@ async function runSuppScan() {
   const btn=$('ns-scan-btn'); btn.textContent='⏳ Analyzujem...'; btn.disabled=true;
   try {
     const content=[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:nsSuppPhoto.split(',')[1]}},{type:'text',text:'Analyzuj etiketu suplementu. Vráť IBA JSON: {"name":"","dose":"","active":"","time":"morning"} kde time je morning/evening/meal/anytime.'}];
-    const resp=await fetch('https://mirka-proxy.bajtosova.workers.dev',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:300,messages:[{role:'user',content}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:300,messages:[{role:'user',content}]})});
     const data=await resp.json(); if(data.error)throw new Error(data.error.message);
     suppScanResult=JSON.parse(data.content?.find(c=>c.type==='text')?.text.replace(/```json|```/g,'').trim()||'{}');
     $('ns-result-body').innerHTML=`<b>${suppScanResult.name||'?'}</b><br><span style="color:var(--t2)">${suppScanResult.dose||''}</span>${suppScanResult.active?`<br><span style="font-size:11px;color:var(--t2)">${suppScanResult.active}</span>`:''}`;
@@ -2035,7 +2035,7 @@ async function genRecommendations() {
   $('reco-content').innerHTML='<div style="color:var(--t2)">Analyzujem posledných 7 dní…</div>';
   const tgt=getTargets(), summary=last7().map(d=>{const t=calcTotals(getDayData(d).meals);return`${d}: ${Math.round(t.kcal)}kcal B${Math.round(t.protein)}g S${Math.round(t.carbs)}g T${Math.round(t.fat)}g Ω3${Math.round(t.omega3)}mg`;}).join('\n');
   try {
-    const resp=await fetch('https://mirka-proxy.bajtosova.workers.dev',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:800,messages:[{role:'user',content:`Si nutričný poradca. Analyzuj 7-dňový log pre ženu (48r, 79kg, cieľ 70kg, perimenopauza, CV riziko, migrény). Ciele: ${tgt.kcal}kcal B${tgt.protein}g S${tgt.carbs}g T${tgt.fat}g Ω3 ${tgt.omega3}mg.\nLog:\n${summary}\n\nDaj 3-5 konkrétnych odporúčaní po slovensky. Buď stručný a praktický.`}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:800,messages:[{role:'user',content:`Si nutričný poradca. Analyzuj 7-dňový log pre ženu (48r, 79kg, cieľ 70kg, perimenopauza, CV riziko, migrény). Ciele: ${tgt.kcal}kcal B${tgt.protein}g S${tgt.carbs}g T${tgt.fat}g Ω3 ${tgt.omega3}mg.\nLog:\n${summary}\n\nDaj 3-5 konkrétnych odporúčaní po slovensky. Buď stručný a praktický.`}]})});
     const data=await resp.json(); if(data.error)throw new Error(data.error.message);
     const text=data.content?.find(c=>c.type==='text')?.text||'Nepodarilo sa získať odporúčania.';
     $('reco-content').innerHTML=`<div style="font-size:13px;line-height:1.75;color:var(--tx)">${text.replace(/\n/g,'<br>')}</div>`;
