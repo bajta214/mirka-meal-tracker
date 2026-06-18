@@ -498,6 +498,7 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bo
     <div class="card">
       <div id="supp-settings"></div>
       <button class="btn bs bsm bfw" style="margin-top:10px" onclick="openScreen('supps')">Otvoriť záložku Suplementy →</button>
+      <button class="btn bs bsm bfw" style="margin-top:8px" onclick="resetSupps()">↺ Obnoviť na predvolený profil</button>
     </div>
     <div class="sl">Sledovanie hmotnosti</div>
     <div class="card">
@@ -1051,14 +1052,20 @@ const TIME_LABEL = {morning:'Ráno',evening:'Večer',meal:'S jedlom',anytime:'Ke
 const TIME_CSS = {morning:'tm',evening:'te',meal:'tl',anytime:'ta'};
 
 const DEFAULT_SUPPS = [
-  {id:'s1',name:'Omega-3',dose:'2 kapsuly',doseQty:2,doseUnit:'kapsuly',active:'720mg EPA + 480mg DHA (na dávku)',time:'meal',freq:'daily',critical:true,defaultChecked:false,photo:null,nutrients:{omega3:600,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
-  {id:'s2',name:'Horčík',dose:'1 vrecko 300mg',doseQty:1,doseUnit:'vrecko',active:'Magnosolv alebo Chelát',time:'evening',freq:'daily',critical:true,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:300,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
-  {id:'s3',name:'B-komplex',dose:'1 kapsula',doseQty:1,doseUnit:'kapsula',active:'B1 B2 B6 B12 folát',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
-  {id:'s4',name:'D3 + K2',dose:'1 kapsula',doseQty:1,doseUnit:'kapsula',active:'2000 IU D3 + 100µg K2-MK7 (na kapsulu)',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:2000,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
-  {id:'s5',name:'CoQ10',dose:'1 kapsula 100mg',doseQty:1,doseUnit:'kapsula',active:'Ubichinón',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
-  {id:'s6',name:'Kreatín',dose:'2× 5.5g',doseQty:2,doseUnit:'× 5.5g',active:'Kreatín monohydrát',time:'meal',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
-  {id:'s7',name:'Probiotiká',dose:'1 kapsula',doseQty:1,doseUnit:'kapsula',active:'Lactobacillus + Bifidobacterium',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
-  {id:'s8',name:'Kolagén',dose:'10g prášok',doseQty:1,doseUnit:'× 10g',active:'Hydrolyzovaný typ I+III',time:'morning',freq:'occasional',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:8,kcal:36}},
+  {id:'s1',name:'Probiotiká (iProbio Allergic+)',dose:'1 vrecúško',doseQty:1,doseUnit:'vrecúško',active:'Klinicky testované baktérie, ráno nalačno pred jedlom',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s2',name:'Omega-3 (Warrior TG Strong)',dose:'3 softgely',doseQty:3,doseUnit:'softgely',active:'330mg EPA + 220mg DHA na softgel, triglyceridová forma — s raňajkami',time:'meal',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:550,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s3',name:'B-komplex (Dr.Max Forte)',dose:'1 tableta',doseQty:1,doseUnit:'tableta',active:'B1 15mg, B2 15mg, B3 50mg, B5 25mg, B6 10mg, B7 500µg — bez B9/B12',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s4',name:'Vitamín D3',dose:'1 softgel',doseQty:1,doseUnit:'softgel',active:'Doctor\'s Best D3 2000 IU (50µg)',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:2000,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s5',name:'Vitamín C (so šípky)',dose:'1 tableta',doseQty:1,doseUnit:'tableta',active:'GS Vitamín C 1000mg + šípky — príležitostne, nie denne',time:'morning',freq:'occasional',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:1000,protein:0,kcal:0}},
+  {id:'s6',name:'CoQ10',dose:'1 kapsula',doseQty:1,doseUnit:'kapsula',active:'Natural Nutrition, Ubichinón 100mg, vegan',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s7',name:'Vitamín K2',dose:'1 tableta',doseQty:1,doseUnit:'tableta',active:'Warrior K2, 100µg MK-7',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s8',name:'Vápnik (Citrát)',dose:'1 tableta',doseQty:1,doseUnit:'tableta',active:'Warrior Calcium Citrate, 120mg elem. Ca/tabletu (štítok odporúča 3×/deň)',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:120,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s9',name:'MSM (organická síra)',dose:'2 odmerky (4g)',doseQty:2,doseUnit:'odmerky (á 2g)',active:'Natural Nutrition, 99.85% čistota, 4000mg MSM denne ráno',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s10',name:'Kolagén + Hyaluronát',dose:'1 porcia (prášok)',doseQty:1,doseUnit:'porcia',active:'Hydrolysed Marine Collagen + Hyaluronic Acid — drink, príležitostne',time:'morning',freq:'occasional',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s11',name:'Inosifol (Inozitol + Quatrefolic)',dose:'1 odmerka (4.2g)',doseQty:1,doseUnit:'odmerka',active:'4200mg myo-inozitol + 400µg Quatrefolic (aktívny folát) — príležitostne ráno',time:'morning',freq:'occasional',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s12',name:'WPC80 Whey Protein',dose:'1 odmerka (30g)',doseQty:1,doseUnit:'odmerka',active:'NaMaximum, vanilla — kedykoľvek; nezarátavať automaticky, potvrdiť pri logovaní',time:'anytime',freq:'daily',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:22.8,kcal:118}},
+  {id:'s13',name:'Horčík (Magnosolv / Chelát Mg)',dose:'1 vrecko / 1 kapsula',doseQty:1,doseUnit:'vrecko alebo kapsula',active:'Striedanie: Magnosolv 342mg Mg (vrecko) ALEBO Chelated Mg 100mg (kapsula) — neurologická indikácia (migréna, LS spazmus), nesmie sa vynechať. Nutričná hodnota nastavená na Magnosolv (342mg) — pri Chelated Mg uprav ručne na 100mg.',time:'evening',freq:'daily',critical:true,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:342,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s14',name:'Kreatín monohydrát',dose:'1 odmerka (6g)',doseQty:1,doseUnit:'odmerka',active:'Natural Nutrition, Lime Sorbet, 1×6g/deň — kedykoľvek',time:'anytime',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
 ];
 
 const DEFAULT_PRODUCTS = [
@@ -2113,6 +2120,12 @@ function renderMicroEditor(){
 }
 function updateMicro(key,val){const list=getMicros(),m=list.find(x=>x.k===key);if(m){m.v=+val;lw('micros',list);}toast('Aktualizované');}
 function resetMicros(){if(!confirm('Obnoviť predvolené mikrociele?'))return;lw('micros',null);renderMicroEditor();renderToday();toast('Predvolené obnovené ✓');}
+function resetSupps(){
+  if(!confirm('Obnoviť zoznam suplementov na predvolený profil? Aktuálny zoznam (vrátane prípadných ručných úprav) sa prepíše. Záznamy jedál, produkty a história zostanú nedotknuté.')) return;
+  saveSupps(deep(DEFAULT_SUPPS));
+  renderSupps(); renderSettingSuppList(); renderToday();
+  toast('Suplementy obnovené na predvolený profil ✓');
+}
 
 function renderSettingSuppList(){
   const cont=$('supp-settings'); if(!cont) return;
