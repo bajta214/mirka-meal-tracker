@@ -312,20 +312,6 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bo
 </div>
 
 <!-- ════════════════════════════════════════
-  SCREEN: RECIPES
-════════════════════════════════════════ -->
-<div id="scr-recipes" class="scr">
-  <div class="ph">
-    <h1>Recepty</h1>
-    <button class="btn bp bsm" onclick="openAddRecipe()">＋ Nový</button>
-  </div>
-  <div class="sa">
-    <div class="search-wrap"><input id="rec-search" type="search" placeholder="Hľadaj recept..." oninput="renderRecipes()"></div>
-    <div id="recipes-list"></div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
   SCREEN: SUPPLEMENTS
 ════════════════════════════════════════ -->
 <div id="scr-supps" class="scr">
@@ -562,10 +548,6 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bo
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
     <span>Produkty</span>
   </div>
-  <div class="tab" id="tab-recipes" onclick="openScreen('recipes')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-    <span>Recepty</span>
-  </div>
   <div class="tab" id="tab-supps" onclick="openScreen('supps')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v2"/><path d="M14 19l2 2 4-4"/></svg>
     <span>Supl.</span><div class="tab-dot" id="dot-supps"></div>
@@ -597,7 +579,6 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bo
     <div class="src-tab act" data-src="text" onclick="selMealSrc(this)">📝 Popis</div>
     <div class="src-tab" data-src="manual" onclick="selMealSrc(this)">✏️ Ručne</div>
     <div class="src-tab" data-src="product" onclick="selMealSrc(this)">📦 Produkt</div>
-    <div class="src-tab" data-src="recipe" onclick="selMealSrc(this)">📖 Recept</div>
     <div class="src-tab" data-src="ai" onclick="selMealSrc(this)">📷 AI foto</div>
   </div>
   <!-- TEXT/POPIS -->
@@ -643,15 +624,6 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bo
     <div id="mp-amount-row" style="display:none">
       <div class="fg"><label class="lbl">Porcia (g)</label><input id="mp-amount" type="number" value="100" oninput="updateMealFromProd()"></div>
       <div id="mp-preview" class="inset" style="font-size:13px;color:var(--t1);margin-bottom:12px"></div>
-    </div>
-  </div>
-  <!-- FROM RECIPE -->
-  <div id="ms-recipe" style="display:none">
-    <div class="search-wrap" style="margin-bottom:10px"><input id="mr-search" type="search" placeholder="Hľadaj recept..." oninput="renderMealRecPicker()"></div>
-    <div id="mr-list" style="max-height:200px;overflow-y:auto;margin-bottom:10px"></div>
-    <div id="mr-serv-row" style="display:none">
-      <div class="fg"><label class="lbl">Počet porcií</label><input id="mr-servings" type="number" value="1" min="0.5" step="0.5" oninput="updateMealFromRec()"></div>
-      <div id="mr-preview" class="inset" style="font-size:13px;color:var(--t1);margin-bottom:12px"></div>
     </div>
   </div>
   <!-- AI -->
@@ -813,6 +785,15 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bo
       </label>
     </div>
     <img id="p-photo-prev" class="photo-prev">
+    <button id="p-scan-btn" class="btn bs bsm bfw" style="margin-top:10px;display:none" onclick="runProdScan()">🤖 Načítať údaje z etikety (AI)</button>
+    <div id="p-scan-result" style="display:none;background:var(--s2);border-radius:var(--rs);padding:12px;margin-top:10px">
+      <div id="p-scan-result-body" style="font-size:12px;color:var(--t1);margin-bottom:10px;line-height:1.6"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn bs bsm" style="flex:1" onclick="$('p-scan-result').style.display='none'">Odmietnuť</button>
+        <button class="btn bp bsm" style="flex:2" onclick="acceptProdScan()">Použiť ✓</button>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--t2);margin-top:6px">Vyfoť tabuľku "Výživové údaje" čo najbližšie a ostro — AI z nej presne prečíta hodnoty na 100g.</div>
   </div>
   <input type="hidden" id="p-edit-id">
   <div style="display:flex;gap:10px;margin-top:4px">
@@ -835,69 +816,11 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bo
 </div>
 </div>
 
-<!-- ADD RECIPE -->
-<div id="m-recipe" class="mov" onclick="if(event.target===this)closeModal('m-recipe')">
-<div class="modal">
-  <div class="mhnd"></div>
-  <div class="mtit" id="rec-modal-title">Nový recept</div>
-  <div class="fg"><label class="lbl">Názov receptu *</label><input id="r-name" type="text" placeholder="Napr. Proteínová misa"></div>
-  <div class="fg"><label class="lbl">Počet porcií</label><input id="r-servings" type="number" value="1" min="1" oninput="recalcRecipe()"></div>
-  <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Ingrediencie</div>
-  <div id="r-ings-list" style="margin-bottom:8px"></div>
-  <button class="btn bs bsm bfw" style="margin-bottom:12px" onclick="openAddIng()">＋ Pridať ingredienciu</button>
-  <div id="r-nutrition" style="display:none" class="inset" style="margin-bottom:12px"></div>
-  <div class="fg"><label class="lbl">Postup (voliteľné)</label><textarea id="r-instr" rows="3" placeholder="Popis prípravy..."></textarea></div>
-  <input type="hidden" id="r-edit-id">
-  <div style="display:flex;gap:10px;margin-top:4px">
-    <button class="btn bs" style="flex:1" onclick="closeModal('m-recipe')">Zrušiť</button>
-    <button class="btn bp" style="flex:2" onclick="saveRecipe()">Uložiť recept</button>
-  </div>
-</div>
-</div>
-
-<!-- ADD INGREDIENT -->
-<div id="m-ing" class="mov" onclick="if(event.target===this)closeModal('m-ing')">
-<div class="modal">
-  <div class="mhnd"></div>
-  <div class="mtit">Pridať ingredienciu</div>
-  <div class="fg"><label class="lbl">Názov *</label><input id="ing-name" type="text" placeholder="Napr. Tvaroh"></div>
-  <div class="fg"><label class="lbl">Množstvo (g) *</label><input id="ing-amt" type="number" placeholder="100" oninput="autoFillIng()"></div>
-  <div id="ing-autofill" style="display:none;margin-bottom:10px" class="inset">
-    <div style="font-size:12px;color:var(--t1)">Nájdené v knižnici — hodnoty doplnené automaticky</div>
-  </div>
-  <div class="fgrid">
-    <div><label class="lbl">Kalórie</label><input id="ing-kcal" type="number" placeholder="0"></div>
-    <div><label class="lbl">Proteín (g)</label><input id="ing-prot" type="number" placeholder="0"></div>
-    <div><label class="lbl">Sacharidy (g)</label><input id="ing-carb" type="number" placeholder="0"></div>
-    <div><label class="lbl">Tuky (g)</label><input id="ing-fat" type="number" placeholder="0"></div>
-    <div><label class="lbl">Vláknina (g)</label><input id="ing-fib" type="number" placeholder="0"></div>
-    <div><label class="lbl">Omega-3 (mg)</label><input id="ing-om3" type="number" placeholder="0"></div>
-  </div>
-  <div style="display:flex;gap:10px">
-    <button class="btn bs" style="flex:1" onclick="closeModal('m-ing')">Zrušiť</button>
-    <button class="btn bp" style="flex:2" onclick="saveIng()">Pridať</button>
-  </div>
-</div>
-</div>
-
-<!-- RECIPE DETAIL -->
-<div id="m-rec-detail" class="mov" onclick="if(event.target===this)closeModal('m-rec-detail')">
-<div class="modal">
-  <div class="mhnd"></div>
-  <div id="rec-detail-body"></div>
-  <div style="display:flex;gap:8px;margin-top:13px">
-    <button class="btn bd bsm" style="flex:1" id="rec-del-btn">Vymazať</button>
-    <button class="btn bs bsm" style="flex:1" id="rec-edit-btn">Upraviť</button>
-    <button class="btn bp bsm" style="flex:2" id="rec-log-btn">Do logu</button>
-  </div>
-</div>
-</div>
-
 <!-- ADD SUPPLEMENT -->
 <div id="m-supp" class="mov" onclick="if(event.target===this)closeModal('m-supp')">
 <div class="modal">
   <div class="mhnd"></div>
-  <div class="mtit">Nový suplement</div>
+  <div class="mtit" id="m-supp-title">Nový suplement</div>
   <div style="background:rgba(109,143,245,.07);border:1px solid rgba(109,143,245,.2);border-radius:var(--rs);padding:13px;margin-bottom:14px">
     <div style="font-size:13px;font-weight:600;color:var(--ac);margin-bottom:8px">📷 Naskenuj etiketu (AI)</div>
     <div style="display:flex;gap:8px;margin-bottom:8px">
@@ -921,8 +844,14 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bo
     </div>
   </div>
   <div class="fg"><label class="lbl">Názov *</label><input id="ns-name" type="text" placeholder="Napr. Omega-3"></div>
-  <div class="fg"><label class="lbl">Dávka</label><input id="ns-dose" type="text" placeholder="Napr. 2 kapsuly / 1200mg"></div>
-  <div class="fg"><label class="lbl">Aktívna látka</label><input id="ns-active" type="text" placeholder="Napr. 720mg EPA + 480mg DHA"></div>
+  <div class="fgrid" style="margin-bottom:13px">
+    <div class="fg" style="margin-bottom:0"><label class="lbl">Počet ks v dávke</label><input id="ns-doseqty" type="number" inputmode="decimal" min="0" step="0.5" placeholder="napr. 2" value="1"></div>
+    <div class="fg" style="margin-bottom:0"><label class="lbl">Jednotka</label><input id="ns-doseunit" type="text" placeholder="kapsula / vrecko / g"></div>
+  </div>
+  <div style="font-size:11px;color:var(--t2);margin:-7px 0 13px">Počet kapsúl/jednotiek v jednej dávke — použije sa na výpočet prijatých nutrientov.</div>
+  <div class="fg"><label class="lbl">Aktívna látka (popis)</label><input id="ns-active" type="text" placeholder="Napr. 720mg EPA + 480mg DHA"></div>
+  <div class="sl" style="margin-top:2px">Obsah v 1 kapsule / jednotke</div>
+  <div id="ns-nutrients" style="margin-bottom:13px"></div>
   <div class="fg"><label class="lbl">Čas užívania</label>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <div class="chip act" data-time="morning" onclick="selSuppTime(this)">🌅 Ráno</div>
@@ -1016,7 +945,7 @@ function closeAll() {
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const SCRIDS = ['today','log','products','recipes','supps','history','settings'];
+const SCRIDS = ['today','log','products','supps','history','settings'];
 function openScreen(name) {
   SCRIDS.forEach(s => {
     $('scr-'+s)?.classList.toggle('act', s===name);
@@ -1025,7 +954,6 @@ function openScreen(name) {
   if (name==='today') renderToday();
   if (name==='log') renderLog();
   if (name==='products') renderProducts();
-  if (name==='recipes') renderRecipes();
   if (name==='supps') renderSupps();
   if (name==='history') renderHistory();
   if (name==='settings') renderSettings();
@@ -1052,8 +980,32 @@ function getDayData(date) { return ls('day_'+date) || {meals:[],activities:[],su
 function saveDayData(date, data) { lw('day_'+date, data); }
 function getProfile() { return ls('profile') || {name:'Miroslava Bajtošová',age:48,gender:'female',height:177,weight:79,goalWeight:70,goal:'lose',activityLevel:1.2,loseKg:9,loseRate:500}; }
 function getProducts() { return ls('products') || deep(DEFAULT_PRODUCTS); }
-function getRecipes() { return ls('recipes') || deep(DEFAULT_RECIPES); }
-function getSupps() { return ls('supps') || deep(DEFAULT_SUPPS); }
+const SUPP_NUTRIENT_FIELDS = [
+  {k:'vitd',l:'Vitamín D',u:'IU'},
+  {k:'omega3',l:'Omega-3',u:'mg'},
+  {k:'magnesium',l:'Horčík',u:'mg'},
+  {k:'calcium',l:'Vápnik',u:'mg'},
+  {k:'iron',l:'Železo',u:'mg'},
+  {k:'potassium',l:'Draslík',u:'mg'},
+  {k:'vitc',l:'Vit. C',u:'mg'},
+  {k:'protein',l:'Bielkoviny',u:'g'},
+  {k:'kcal',l:'Energia',u:'kcal'},
+];
+function migrateSupp(s){
+  if(!s.nutrients) s.nutrients={};
+  SUPP_NUTRIENT_FIELDS.forEach(f=>{ if(s.nutrients[f.k]===undefined) s.nutrients[f.k]=0; });
+  if(s.doseQty===undefined){ const m=(s.dose||'').match(/^(\d+(\.\d+)?)/); s.doseQty=m?+m[1]:1; }
+  if(s.doseUnit===undefined){ s.doseUnit=(s.dose||'').replace(/^[\d.]+\s*/,'').trim(); }
+  return s;
+}
+function getSupps() {
+  let list = ls('supps');
+  if(!list){ list=deep(DEFAULT_SUPPS); }
+  let changed=false;
+  list = list.map(s=>{ const before=JSON.stringify(s); migrateSupp(s); if(JSON.stringify(s)!==before) changed=true; return s; });
+  if(changed || !ls('supps')) saveSupps(list);
+  return list;
+}
 function saveSupps(s) { lw('supps',s); }
 function getChecks(date) { return ls('chk_'+date) || {}; }
 function saveChecks(date,c) { lw('chk_'+date,c); }
@@ -1061,10 +1013,30 @@ function getTargets() { return ls('targets') || deep(DEFAULT_TARGETS); }
 function getWeightLog() { return ls('wlog') || []; }
 function saveWeightLog(l) { lw('wlog',l); }
 
+function emptyTotals() {
+  return {kcal:0,protein:0,carbs:0,fat:0,fiber:0,satfat:0,sugar:0,salt:0,iron:0,calcium:0,magnesium:0,potassium:0,omega3:0,vitc:0,vitd:0,cholesterol:0};
+}
 function calcTotals(meals) {
-  const t={kcal:0,protein:0,carbs:0,fat:0,fiber:0,satfat:0,sugar:0,salt:0,iron:0,calcium:0,magnesium:0,potassium:0,omega3:0,vitc:0,vitd:0,cholesterol:0};
+  const t=emptyTotals();
   meals.forEach(m => Object.keys(t).forEach(k => t[k] += (m[k]||0)));
   return t;
+}
+function calcSuppTotals(date) {
+  const t=emptyTotals(), checks=getChecks(date), supps=getSupps();
+  supps.forEach(s=>{
+    if(!checks[s.id]) return;
+    const qty=s.doseQty||1, nut=s.nutrients||{};
+    Object.keys(t).forEach(k=>{ if(nut[k]) t[k]+=nut[k]*qty; });
+  });
+  return t;
+}
+function mergeTotals(...lists) {
+  const t=emptyTotals();
+  lists.forEach(l=>Object.keys(t).forEach(k=>t[k]+=(l&&l[k])||0));
+  return t;
+}
+function calcDayTotals(date) {
+  return mergeTotals(calcTotals(getDayData(date).meals), calcSuppTotals(date));
 }
 
 // ══════════════════════════════════════════════
@@ -1079,14 +1051,14 @@ const TIME_LABEL = {morning:'Ráno',evening:'Večer',meal:'S jedlom',anytime:'Ke
 const TIME_CSS = {morning:'tm',evening:'te',meal:'tl',anytime:'ta'};
 
 const DEFAULT_SUPPS = [
-  {id:'s1',name:'Omega-3',dose:'2 kapsuly',active:'720mg EPA + 480mg DHA',time:'meal',freq:'daily',critical:true,defaultChecked:false,photo:null},
-  {id:'s2',name:'Horčík',dose:'1 vrecko 300mg',active:'Magnosolv alebo Chelát',time:'evening',freq:'daily',critical:true,defaultChecked:false,photo:null},
-  {id:'s3',name:'B-komplex',dose:'1 kapsula',active:'B1 B2 B6 B12 folát',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null},
-  {id:'s4',name:'D3 + K2',dose:'1 kapsula',active:'2000 IU D3 + 100µg K2-MK7',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null},
-  {id:'s5',name:'CoQ10',dose:'1 kapsula 100mg',active:'Ubichinón',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null},
-  {id:'s6',name:'Kreatín',dose:'2× 5.5g',active:'Kreatín monohydrát',time:'meal',freq:'daily',critical:false,defaultChecked:true,photo:null},
-  {id:'s7',name:'Probiotiká',dose:'1 kapsula',active:'Lactobacillus + Bifidobacterium',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null},
-  {id:'s8',name:'Kolagén',dose:'10g prášok',active:'Hydrolyzovaný typ I+III',time:'morning',freq:'occasional',critical:false,defaultChecked:false,photo:null},
+  {id:'s1',name:'Omega-3',dose:'2 kapsuly',doseQty:2,doseUnit:'kapsuly',active:'720mg EPA + 480mg DHA (na dávku)',time:'meal',freq:'daily',critical:true,defaultChecked:false,photo:null,nutrients:{omega3:600,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s2',name:'Horčík',dose:'1 vrecko 300mg',doseQty:1,doseUnit:'vrecko',active:'Magnosolv alebo Chelát',time:'evening',freq:'daily',critical:true,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:300,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s3',name:'B-komplex',dose:'1 kapsula',doseQty:1,doseUnit:'kapsula',active:'B1 B2 B6 B12 folát',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s4',name:'D3 + K2',dose:'1 kapsula',doseQty:1,doseUnit:'kapsula',active:'2000 IU D3 + 100µg K2-MK7 (na kapsulu)',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:2000,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s5',name:'CoQ10',dose:'1 kapsula 100mg',doseQty:1,doseUnit:'kapsula',active:'Ubichinón',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s6',name:'Kreatín',dose:'2× 5.5g',doseQty:2,doseUnit:'× 5.5g',active:'Kreatín monohydrát',time:'meal',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s7',name:'Probiotiká',dose:'1 kapsula',doseQty:1,doseUnit:'kapsula',active:'Lactobacillus + Bifidobacterium',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s8',name:'Kolagén',dose:'10g prášok',doseQty:1,doseUnit:'× 10g',active:'Hydrolyzovaný typ I+III',time:'morning',freq:'occasional',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:8,kcal:36}},
 ];
 
 const DEFAULT_PRODUCTS = [
@@ -1103,24 +1075,6 @@ const DEFAULT_PRODUCTS = [
   {id:'dp11',name:'Brokolica',brand:'',cat:'Zelenina',kcal:34,protein:2.8,carbs:6.6,fat:0.4,fiber:2.6,satfat:0,sugar:1.7,salt:0,iron:0.7,calcium:47,magnesium:21,potassium:316,omega3:0,vitc:89.2,vitd:0,cholesterol:0,photo:null},
   {id:'dp12',name:'Čučoriedky',brand:'',cat:'Ovocie',kcal:57,protein:0.7,carbs:14.5,fat:0.3,fiber:2.4,satfat:0,sugar:10,salt:0,iron:0.3,calcium:6,magnesium:6,potassium:77,omega3:0,vitc:9.7,vitd:0,cholesterol:0,photo:null},
   {id:'dp13',name:'Vlašské orechy',brand:'',cat:'Orechy',kcal:654,protein:15.2,carbs:13.7,fat:65.2,fiber:6.7,satfat:6.1,sugar:2.6,salt:0,iron:2.9,calcium:98,magnesium:158,potassium:441,omega3:9080,vitc:1.3,vitd:0,cholesterol:0,photo:null},
-];
-
-const DEFAULT_RECIPES = [
-  {id:'dr1',name:'Proteínová raňajková misa',servings:1,notes:'Pred cvičením',
-   ingredients:[
-    {id:'i1',name:'Tvaroh (nízkotučný)',amount:150,kcal:129,protein:19.8,carbs:5.4,fat:0.75,fiber:0,omega3:0,calcium:126,iron:0.15,magnesium:13.5},
-    {id:'i2',name:'Grécky jogurt (0%)',amount:100,kcal:59,protein:10.3,carbs:3.6,fat:0.4,fiber:0,omega3:0,calcium:110,iron:0.1,magnesium:11},
-    {id:'i3',name:'Čučoriedky',amount:100,kcal:57,protein:0.7,carbs:14.5,fat:0.3,fiber:2.4,omega3:0,calcium:6,iron:0.3,magnesium:6},
-    {id:'i4',name:'WPC80',amount:20,kcal:76,protein:16,carbs:1.2,fat:0.8,fiber:0,omega3:0,calcium:24,iron:0.1,magnesium:6},
-   ],
-   kcalPS:321,protPS:46.8,carbPS:24.7,fatPS:2.25,fibPS:2.4,om3PS:0,caPS:266,fePS:0.65,mgPS:36.5},
-  {id:'dr2',name:'Tvarohový koláč (reflux-friendly)',servings:8,notes:'Bez citrusov, bez mäty. 180°C / 35 min.',
-   ingredients:[
-    {id:'i5',name:'Tvaroh (nízkotučný)',amount:500,kcal:430,protein:66,carbs:18,fat:2.5,fiber:0,omega3:0,calcium:420,iron:0.5,magnesium:45},
-    {id:'i6',name:'Vajce (celé)',amount:150,kcal:232,protein:19.5,carbs:1.65,fat:16.5,fiber:0,omega3:135,calcium:84,iron:2.7,magnesium:18},
-    {id:'i7',name:'Ovsené vločky',amount:80,kcal:311,protein:13.6,carbs:52.8,fat:5.6,fiber:8.48,omega3:88,calcium:43,iron:3.76,magnesium:110},
-   ],
-   kcalPS:121.6,protPS:12.4,carbPS:9.06,fatPS:3.08,fibPS:1.06,om3PS:27.9,caPS:68.4,fePS:0.87,mgPS:21.6},
 ];
 
 const DEFAULT_MICROS = [
@@ -1156,7 +1110,7 @@ function suppEmoji(s) {
 // TODAY SCREEN
 // ══════════════════════════════════════════════
 function renderToday() {
-  const day = getDayData(TODAY), tgt = getTargets(), tot = calcTotals(day.meals);
+  const day = getDayData(TODAY), tgt = getTargets(), tot = calcDayTotals(TODAY);
   const actKcal = (day.activities||[]).reduce((s,a)=>s+(a.kcal||0),0);
   // Date label
   $('today-lbl').textContent = `${DAYS[now.getDay()]}, ${now.getDate()}. ${MONS[now.getMonth()]} ${now.getFullYear()}`;
@@ -1272,7 +1226,7 @@ function renderLog() {
   const dt = new Date(logDate+'T12:00:00');
   $('log-day-lbl').textContent = DAYS[dt.getDay()];
   $('log-date-lbl').textContent = isToday ? 'Dnes' : fmtDate(logDate);
-  const day = getDayData(logDate), tgt = getTargets(), tot = calcTotals(day.meals);
+  const day = getDayData(logDate), tgt = getTargets(), tot = calcDayTotals(logDate);
   const grouped = {}; MEAL_ORDER.forEach(k=>grouped[k]=[]);
   day.meals.forEach(m=>(grouped[m.mealType]||grouped.breakfast).push(m));
   $('log-meals-by-type').innerHTML = MEAL_ORDER.map(type => {
@@ -1321,10 +1275,10 @@ function shiftLog(delta) {
 // MEAL MODAL
 // ══════════════════════════════════════════════
 let mealSrc = 'manual', mealEditId = null;
-let pickedProd = null, pickedRec = null, aiMealResult = null;
+let pickedProd = null, aiMealResult = null;
 
 function openAddMeal(type) {
-  mealEditId = null; pickedProd = null; pickedRec = null; aiMealResult = null;
+  mealEditId = null; pickedProd = null; aiMealResult = null;
   // Reset form
   ['m-name','m-amount','m-kcal','m-prot','m-carb','m-fat','m-fib','m-satfat','m-sugar','m-salt','m-iron','m-ca','m-mg','m-k','m-om3','m-vitc','m-vitd','m-chol'].forEach(id => { const e=$(id); if(e) e.value=''; });
   $('mai-prev').style.display='none'; $('mai-result').style.display='none'; $('mai-desc').value='';
@@ -1333,7 +1287,7 @@ function openAddMeal(type) {
   if($('mai-photo-lbl')) $('mai-photo-lbl').style.display='none';
   if($('mt-desc')) $('mt-desc').value='';
   if($('mt-result')) $('mt-result').style.display='none';
-  $('mp-amount-row').style.display='none'; $('mr-serv-row').style.display='none';
+  $('mp-amount-row').style.display='none';
   $('meal-modal-title').textContent = 'Pridať jedlo';
   // Set meal type
   if(type) { document.querySelectorAll('#meal-type-chips .chip').forEach(c=>c.classList.toggle('act',c.dataset.mt===type)); }
@@ -1345,9 +1299,8 @@ function selMealType(el) { el.closest('.chips').querySelectorAll('.chip').forEac
 function selMealSrc(el) {
   mealSrc = el.dataset.src;
   document.querySelectorAll('.src-tab').forEach(t=>t.classList.toggle('act',t.dataset.src===mealSrc));
-  ['text','manual','product','recipe','ai'].forEach(s => $('ms-'+s).style.display = s===mealSrc?'block':'none');
+  ['text','manual','product','ai'].forEach(s => $('ms-'+s).style.display = s===mealSrc?'block':'none');
   if(mealSrc==='product') renderMealProdPicker();
-  if(mealSrc==='recipe') renderMealRecPicker();
 }
 
 function renderMealProdPicker() {
@@ -1367,24 +1320,6 @@ function updateMealFromProd() {
   if(!pickedProd) return;
   const amt = +$('mp-amount').value||100, r=amt/100, p=pickedProd;
   $('mp-preview').innerHTML = `<b>${p.name}</b> · ${amt}g<br><span style="color:var(--t1)">${Math.round((p.kcal||0)*r)} kcal · B${fmtN((p.protein||0)*r,0)}g · S${fmtN((p.carbs||0)*r,0)}g · T${fmtN((p.fat||0)*r,0)}g</span>`;
-}
-
-function renderMealRecPicker() {
-  const q=($('mr-search')?.value||'').toLowerCase();
-  const recs=getRecipes().filter(r=>!q||r.name.toLowerCase().includes(q));
-  $('mr-list').innerHTML = recs.map(r=>`<div class="pk-item" onclick="pickRec('${r.id}',this)">
-    <div><div style="font-size:14px;font-weight:600">${r.name}</div><div style="font-size:12px;color:var(--t1)">${Math.round(r.kcalPS||0)} kcal/porcia · ${r.servings} porcií</div></div>
-  </div>`).join('');
-}
-function pickRec(id, el) {
-  pickedRec = getRecipes().find(r=>r.id===id);
-  document.querySelectorAll('#mr-list .pk-item').forEach(x=>x.classList.remove('sel')); el.classList.add('sel');
-  $('mr-serv-row').style.display='block'; updateMealFromRec();
-}
-function updateMealFromRec() {
-  if(!pickedRec) return;
-  const s=+$('mr-servings').value||1, r=pickedRec;
-  $('mr-preview').innerHTML = `<b>${r.name}</b> · ${s} porci${s===1?'a':'e'}<br><span style="color:var(--t1)">${Math.round((r.kcalPS||0)*s)} kcal · B${fmtN((r.protPS||0)*s,0)}g</span>`;
 }
 
 function prevAIPhoto(event) {
@@ -1482,7 +1417,7 @@ async function runAIMeal() {
     let content=[];
     if(photoFile) {
       btn.textContent='⏳ Zmenšujem foto...';
-      const img = await resizeImage(photoFile, 512, 0.60);
+      const img = await resizeImage(photoFile, 1568, 0.88);
       content.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:img.b64}});
       btn.textContent='⏳ Analyzujem...';
     }
@@ -1493,6 +1428,7 @@ async function runAIMeal() {
     const prompt = `${contextParts[0]}
 
 Odhadni výživové hodnoty pre ženu (48r, 79kg, perimenopauza). Ak je zadaný popis aj foto, uprednostni foto ale využi popis pre spresnenie porcie alebo názvu.
+DÔLEŽITÉ — ak je na fotke viditeľná nutričná tabuľka/etiketa (napr. "Výživové údaje", "ø/100g", "Nutrition facts") s presnými číslami: TIETO ČÍSLA MAJÚ PRIORITU. Neodhaduj všeobecne z databáz, ak sú presné dáta na fotke viditeľné — prepočítaj ich na gramáž zadanú v popise (napr. "180 g") alebo na gramáž odhadnutú z fotky. Ak fotka/popis obsahuje viac položiek (napr. základ + ovocie navyše), pripočítaj zvyšné položky podľa bežných databáz, ale položku s viditeľnou tabuľkou počítaj presne podľa tabuľky.
 Vráť IBA JSON objekt (bez markdown, bez komentárov):
 {"name":"","amount":null,"kcal":0,"protein":0,"carbs":0,"fat":0,"fiber":0,"satfat":0,"sugar":0,"salt":0,"iron":0,"calcium":0,"magnesium":0,"potassium":0,"omega3":0,"vitc":0,"vitd":0,"cholesterol":0}
 Všetky číselné hodnoty musia byť čísla. "name" má byť slovenský názov jedla.`;
@@ -1530,9 +1466,6 @@ function saveMeal() {
   } else if(mealSrc==='product'&&pickedProd) {
     const p=pickedProd, amt=+$('mp-amount').value||100, r=amt/100;
     meal={id:gid(),mealType,name:p.name,amount:amt,kcal:(p.kcal||0)*r,protein:(p.protein||0)*r,carbs:(p.carbs||0)*r,fat:(p.fat||0)*r,fiber:(p.fiber||0)*r,satfat:(p.satfat||0)*r,sugar:(p.sugar||0)*r,salt:(p.salt||0)*r,iron:(p.iron||0)*r,calcium:(p.calcium||0)*r,magnesium:(p.magnesium||0)*r,potassium:(p.potassium||0)*r,omega3:(p.omega3||0)*r,vitc:(p.vitc||0)*r,vitd:(p.vitd||0)*r,cholesterol:(p.cholesterol||0)*r,time:new Date().toISOString()};
-  } else if(mealSrc==='recipe'&&pickedRec) {
-    const r=pickedRec, sv=+$('mr-servings').value||1;
-    meal={id:gid(),mealType,name:r.name+(sv!==1?` ×${sv}`:''),kcal:(r.kcalPS||0)*sv,protein:(r.protPS||0)*sv,carbs:(r.carbPS||0)*sv,fat:(r.fatPS||0)*sv,fiber:(r.fibPS||0)*sv,omega3:(r.om3PS||0)*sv,calcium:(r.caPS||0)*sv,iron:(r.fePS||0)*sv,magnesium:(r.mgPS||0)*sv,time:new Date().toISOString()};
   } else if(mealSrc==='ai'&&aiMealResult) {
     if(!aiMealResult.kcal) { toast('AI analýza zlyhala — skús znova','err'); return; }
     meal={id:gid(),mealType,...aiMealResult,time:new Date().toISOString()};
@@ -1649,6 +1582,7 @@ function openAddProduct(editId) {
   $('p-edit-id').value=''; $('p-photo-prev').style.display='none'; $('p-cat').value='Mliečne';
   if($('p-photo')) $('p-photo').value='';
   if($('p-photo-cam')) $('p-photo-cam').value='';
+  $('p-scan-btn').style.display='none'; $('p-scan-result').style.display='none'; prodScanPhoto=null; prodScanResult=null;
   $('prod-modal-title').textContent='Nový produkt';
   if(editId) {
     const p=getProducts().find(x=>x.id===editId); if(!p) return;
@@ -1658,18 +1592,51 @@ function openAddProduct(editId) {
       const [fid,fkey]=pair.includes(':')?pair.split(':'):[pair,pair];
       const el=$('p-'+fid); if(el) el.value=p[fkey]||0;
     });
-    if(p.photo) { $('p-photo-prev').src=p.photo; $('p-photo-prev').style.display='block'; }
+    if(p.photo) { $('p-photo-prev').src=p.photo; $('p-photo-prev').style.display='block'; $('p-scan-btn').style.display='block'; prodScanPhoto=p.photo; }
   }
   openModal('m-product');
 }
+let prodScanPhoto=null, prodScanResult=null;
 function prevProdPhoto(event) {
   const f=event.target.files[0]; if(!f) return;
   resizeImage(f, 600, 0.75).then(img=>{
     $('p-photo-prev').src='data:image/jpeg;base64,'+img.b64;
     $('p-photo-prev').style.display='block';
+    $('p-scan-btn').style.display='block'; $('p-scan-result').style.display='none'; prodScanResult=null;
   }).catch(()=>{
-    const r=new FileReader(); r.onload=e=>{$('p-photo-prev').src=e.target.result;$('p-photo-prev').style.display='block';};r.readAsDataURL(f);
+    const r=new FileReader(); r.onload=e=>{$('p-photo-prev').src=e.target.result;$('p-photo-prev').style.display='block';$('p-scan-btn').style.display='block';};r.readAsDataURL(f);
   });
+  // Separate higher-resolution copy used only for AI label reading (small text needs more detail than the stored thumbnail)
+  resizeImage(f, 1568, 0.9).then(img=>{ prodScanPhoto='data:image/jpeg;base64,'+img.b64; }).catch(()=>{ prodScanPhoto=null; });
+}
+async function runProdScan() {
+  if(!prodScanPhoto){toast('Foto sa ešte spracúva, skús o chvíľu','err');return;}
+  const apiKey=ls('apiKey'); if(!apiKey){toast('API kľúč chýba — nastav ho v Nastaveniach','err');return;}
+  const btn=$('p-scan-btn'); btn.textContent='⏳ Čítam etiketu...'; btn.disabled=true;
+  try {
+    const content=[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:prodScanPhoto.split(',')[1]}},{type:'text',text:'Na fotke je nutričná etiketa potraviny (tabuľka "Výživové údaje" / "Nutrition facts"). Prečítaj PRESNÉ číselné hodnoty z tabuľky pre 100g (alebo 100ml, považuj rovnako za 100g). Nehádaj, neodhaduj — ak je hodnota v tabuľke viditeľná, použi presne ju. Ak nejaká hodnota na etikete vôbec nie je, daj 0. Energiu vráť v kcal (ak je len v kJ, preveď: kcal=kJ/4.184). Vráť IBA JSON, žiadny iný text: {"name":"","brand":"","kcal":0,"protein":0,"carbs":0,"fat":0,"fiber":0,"satfat":0,"sugar":0,"salt":0,"iron":0,"calcium":0,"magnesium":0,"potassium":0,"omega3":0,"vitc":0,"vitd":0,"cholesterol":0}'}];
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:500,messages:[{role:'user',content}]})});
+    if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(`API ${resp.status}: ${e?.error?.message||resp.statusText}`); }
+    const data=await resp.json(); if(data.error)throw new Error(data.error.message);
+    prodScanResult=JSON.parse(data.content?.find(c=>c.type==='text')?.text.replace(/```json|```/g,'').trim()||'{}');
+    const p=prodScanResult;
+    $('p-scan-result-body').innerHTML=`<b>${p.name||'Produkt'}</b>${p.brand?' · '+p.brand:''}<br>
+      ${Math.round(p.kcal||0)} kcal · B${fmtN(p.protein||0,1)}g · S${fmtN(p.carbs||0,1)}g · T${fmtN(p.fat||0,1)}g<br>
+      <span style="color:var(--t2)">Vl.${fmtN(p.fiber||0,1)}g · Cukry${fmtN(p.sugar||0,1)}g · Soľ${fmtN(p.salt||0,2)}g</span> <span style="color:var(--t2)">(na 100g)</span>`;
+    $('p-scan-result').style.display='block';
+  } catch(e){ toast('AI chyba: '+e.message,'err'); }
+  btn.textContent='🤖 Načítať údaje z etikety (AI)'; btn.disabled=false;
+}
+function acceptProdScan(){
+  if(!prodScanResult)return;
+  const r=prodScanResult;
+  if(r.name && !$('p-name').value.trim()) $('p-name').value=r.name;
+  if(r.brand) $('p-brand').value=r.brand;
+  ['kcal','prot:protein','carb:carbs','fat','fib:fiber','satfat','sugar','salt','iron','ca:calcium','mg:magnesium','k:potassium','om3:omega3','vitc','vitd','chol:cholesterol'].forEach(pair=>{
+    const [fid,fkey]=pair.includes(':')?pair.split(':'):[pair,pair];
+    const el=$('p-'+fid); if(el) el.value=r[fkey]||0;
+  });
+  $('p-scan-result').style.display='none'; toast('Údaje z etikety použité ✓ — skontroluj a uprav podľa potreby');
 }
 function saveProduct() {
   const name=$('p-name').value.trim(); if(!name){toast('Zadaj názov produktu','err');return;}
@@ -1715,103 +1682,6 @@ function openProdDetail(id) {
   $('prod-edit-btn').onclick=()=>{closeModal('m-prod-detail');openAddProduct(id);};
   $('prod-log-btn').onclick=()=>{closeModal('m-prod-detail');pickedProd=p;openAddMeal(null);selMealSrc(document.querySelector('.src-tab[data-src="product"]'));setTimeout(()=>{$('mp-amount-row').style.display='block';$('mp-amount').value=100;updateMealFromProd();},100);};
   openModal('m-prod-detail');
-}
-
-// ══════════════════════════════════════════════
-// RECIPES
-// ══════════════════════════════════════════════
-let currentIngs=[];
-function renderRecipes() {
-  const q=($('rec-search').value||'').toLowerCase();
-  const recs=getRecipes().filter(r=>!q||r.name.toLowerCase().includes(q));
-  const cont=$('recipes-list');
-  if(!recs.length){cont.innerHTML='<div class="empty"><div>📖</div><div>Žiadne recepty</div></div>';return;}
-  cont.innerHTML=recs.map(r=>`<div class="lc" onclick="openRecDetail('${r.id}')">
-    <div class="lic">🍽️</div>
-    <div style="flex:1;min-width:0">
-      <div style="font-weight:600">${r.name}</div>
-      <div style="font-size:12px;color:var(--t1);margin-top:2px">${Math.round(r.kcalPS||0)} kcal/porcia · B${fmtN(r.protPS||0,0)}g · ${r.servings} porcií</div>
-      ${r.notes?`<div style="font-size:11px;color:var(--t2);margin-top:2px">${r.notes}</div>`:''}
-    </div>
-  </div>`).join('');
-}
-function openAddRecipe(editId) {
-  currentIngs=[];
-  ['r-name','r-instr'].forEach(id=>{const e=$(id);if(e)e.value='';});
-  $('r-servings').value=1; $('r-edit-id').value=''; $('r-nutrition').style.display='none';
-  $('rec-modal-title').textContent='Nový recept';
-  $('r-ings-list').innerHTML='';
-  if(editId) {
-    const r=getRecipes().find(x=>x.id===editId); if(!r) return;
-    $('rec-modal-title').textContent='Upraviť recept'; $('r-edit-id').value=editId;
-    $('r-name').value=r.name||''; $('r-servings').value=r.servings||1; $('r-instr').value=r.notes||'';
-    currentIngs=deep(r.ingredients||[]); renderIngList(); recalcRecipe();
-  }
-  openModal('m-recipe');
-}
-function openAddIng() {
-  ['ing-name','ing-amt','ing-kcal','ing-prot','ing-carb','ing-fat','ing-fib','ing-om3'].forEach(id=>{const e=$(id);if(e)e.value='';});
-  $('ing-autofill').style.display='none'; openModal('m-ing');
-}
-function autoFillIng() {
-  const name=($('ing-name').value||'').trim().toLowerCase(), amt=+$('ing-amt').value||0;
-  const prod=getProducts().find(p=>p.name.toLowerCase()===name||p.name.toLowerCase().includes(name));
-  if(prod&&amt) {
-    const r=amt/100;
-    $('ing-kcal').value=fmtN((prod.kcal||0)*r); $('ing-prot').value=fmtN((prod.protein||0)*r);
-    $('ing-carb').value=fmtN((prod.carbs||0)*r); $('ing-fat').value=fmtN((prod.fat||0)*r);
-    $('ing-fib').value=fmtN((prod.fiber||0)*r); $('ing-om3').value=fmtN((prod.omega3||0)*r);
-    $('ing-autofill').style.display='block';
-  }
-}
-function saveIng() {
-  const name=$('ing-name').value.trim(); const amt=+$('ing-amt').value||0;
-  if(!name||!amt){toast('Zadaj názov a množstvo','err');return;}
-  currentIngs.push({id:gid(),name,amount:amt,kcal:+$('ing-kcal').value||0,protein:+$('ing-prot').value||0,carbs:+$('ing-carb').value||0,fat:+$('ing-fat').value||0,fiber:+$('ing-fib').value||0,omega3:+$('ing-om3').value||0});
-  closeModal('m-ing'); renderIngList(); recalcRecipe();
-}
-function renderIngList() {
-  $('r-ings-list').innerHTML=currentIngs.map(i=>`<div class="ing-row">
-    <div style="flex:1;font-size:13px"><b>${i.name}</b> · ${i.amount}g · ${Math.round(i.kcal)} kcal</div>
-    <button onclick="removeIng('${i.id}')" style="background:none;border:none;color:var(--t2);font-size:17px;cursor:pointer;padding:2px 5px">×</button>
-  </div>`).join('');
-}
-function removeIng(id) { currentIngs=currentIngs.filter(i=>i.id!==id); renderIngList(); recalcRecipe(); }
-function recalcRecipe() {
-  const sv=+$('r-servings').value||1;
-  const tot={kcal:0,protein:0,carbs:0,fat:0,fiber:0,omega3:0,calcium:0,iron:0,magnesium:0};
-  currentIngs.forEach(i=>Object.keys(tot).forEach(k=>tot[k]+=(i[k]||0)));
-  if(!currentIngs.length){$('r-nutrition').style.display='none';return;}
-  $('r-nutrition').style.display='block';
-  $('r-nutrition').innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Výživa / porcia</div><div style="font-size:13px;color:var(--t1)">${Math.round(tot.kcal/sv)} kcal · B${fmtN(tot.protein/sv,0)}g · S${fmtN(tot.carbs/sv,0)}g · T${fmtN(tot.fat/sv,0)}g · Vl.${fmtN(tot.fiber/sv,0)}g</div>`;
-}
-function saveRecipe() {
-  const name=$('r-name').value.trim(); if(!name){toast('Zadaj názov receptu','err');return;}
-  if(!currentIngs.length){toast('Pridaj aspoň 1 ingredienciu','err');return;}
-  const sv=+$('r-servings').value||1, editId=$('r-edit-id').value;
-  const tot={kcal:0,protein:0,carbs:0,fat:0,fiber:0,omega3:0,calcium:0,iron:0,magnesium:0};
-  currentIngs.forEach(i=>Object.keys(tot).forEach(k=>tot[k]+=(i[k]||0)));
-  const rec={id:editId||gid(),name,servings:sv,notes:$('r-instr').value||'',ingredients:deep(currentIngs),kcalPS:tot.kcal/sv,protPS:tot.protein/sv,carbPS:tot.carbs/sv,fatPS:tot.fat/sv,fibPS:tot.fiber/sv,om3PS:tot.omega3/sv,caPS:tot.calcium/sv,fePS:tot.iron/sv,mgPS:tot.magnesium/sv};
-  let recs=getRecipes(); if(editId) recs=recs.map(r=>r.id===editId?rec:r); else recs.push(rec);
-  lw('recipes',recs); closeModal('m-recipe'); closeModal('m-rec-detail'); renderRecipes(); toast(name+(editId?' aktualizovaný':' uložený')+' ✓'); currentIngs=[];
-}
-function openRecDetail(id) {
-  const r=getRecipes().find(x=>x.id===id); if(!r) return;
-  $('rec-detail-body').innerHTML=`<h3 style="margin-bottom:6px">${r.name}</h3>
-  <div style="font-size:12px;color:var(--t2);margin-bottom:13px">${r.servings} porcií${r.notes?' · '+r.notes:''}</div>
-  <div class="inset" style="margin-bottom:12px">
-    <div class="row" style="font-weight:700"><span>Kalórie / porcia</span><span style="color:var(--ac)">${Math.round(r.kcalPS||0)} kcal</span></div>
-    <div class="row"><span style="color:var(--t1)">Bielkoviny</span><span>${fmtN(r.protPS||0,1)} g</span></div>
-    <div class="row"><span style="color:var(--t1)">Sacharidy</span><span>${fmtN(r.carbPS||0,1)} g</span></div>
-    <div class="row"><span style="color:var(--t1)">Tuky</span><span>${fmtN(r.fatPS||0,1)} g</span></div>
-    <div class="row"><span style="color:var(--t1)">Vláknina</span><span>${fmtN(r.fibPS||0,1)} g</span></div>
-  </div>
-  <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:8px;text-transform:uppercase">Ingrediencie</div>
-  ${(r.ingredients||[]).map(i=>`<div style="font-size:13px;padding:6px 0;border-bottom:1px solid var(--b0);color:var(--t1)">${i.name} · ${i.amount}g · ${Math.round(i.kcal||0)} kcal</div>`).join('')}`;
-  $('rec-del-btn').onclick=()=>{if(!confirm('Vymazať recept?'))return;lw('recipes',getRecipes().filter(x=>x.id!==id));closeModal('m-rec-detail');renderRecipes();toast('Recept vymazaný');};
-  $('rec-edit-btn').onclick=()=>{closeModal('m-rec-detail');openAddRecipe(id);};
-  $('rec-log-btn').onclick=()=>{closeModal('m-rec-detail');pickedRec=r;openAddMeal(null);selMealSrc(document.querySelector('.src-tab[data-src="recipe"]'));setTimeout(()=>{$('mr-serv-row').style.display='block';$('mr-servings').value=1;updateMealFromRec();},100);};
-  openModal('m-rec-detail');
 }
 
 // ══════════════════════════════════════════════
@@ -1874,8 +1744,21 @@ function delSupp(id) {
   if(!confirm('Vymazať suplement?'))return; saveSupps(getSupps().filter(s=>s.id!==id));
   renderSupps(); renderSettingSuppList(); toast('Suplement vymazaný');
 }
+let editingSuppId = null;
+function renderSuppNutrientInputs(values) {
+  values = values || {};
+  $('ns-nutrients').innerHTML = SUPP_NUTRIENT_FIELDS.map(f => `
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--b0)">
+      <span style="flex:1;font-size:13px;color:var(--t1)">${f.l}</span>
+      <input id="ns-nut-${f.k}" type="number" inputmode="decimal" min="0" step="any" value="${values[f.k]||''}" placeholder="0" style="width:90px;padding:6px 8px;font-size:13px;text-align:right">
+      <span style="font-size:11px;color:var(--t2);width:30px">${f.u}</span>
+    </div>`).join('');
+}
 function openAddSupp() {
-  ['ns-name','ns-dose','ns-active'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  editingSuppId = null;
+  $('m-supp-title').textContent = 'Nový suplement';
+  ['ns-name','ns-active'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  $('ns-doseqty').value = '1'; $('ns-doseunit').value = '';
   $('ns-prev').style.display='none'; $('ns-scan-btn').style.display='none'; $('ns-result').style.display='none';
   if($('ns-photo')) $('ns-photo').value='';
   if($('ns-photo-cam')) $('ns-photo-cam').value='';
@@ -1884,6 +1767,26 @@ function openAddSupp() {
   $('ns-def-row').style.display='block';
   document.querySelectorAll('#m-supp .chip[data-time]').forEach((c,i)=>c.classList.toggle('act',i===0));
   document.querySelectorAll('#m-supp .fopt').forEach((c,i)=>c.classList.toggle('act',i===0));
+  renderSuppNutrientInputs({});
+  openModal('m-supp');
+}
+function openEditSupp(id) {
+  const s=getSupps().find(x=>x.id===id); if(!s) return;
+  editingSuppId = id;
+  $('m-supp-title').textContent = 'Upraviť suplement';
+  $('ns-name').value = s.name||''; $('ns-active').value = s.active||'';
+  $('ns-doseqty').value = s.doseQty||1; $('ns-doseunit').value = s.doseUnit||'';
+  $('ns-prev').style.display = s.photo?'block':'none'; if(s.photo) $('ns-prev').src=s.photo;
+  $('ns-scan-btn').style.display='none'; $('ns-result').style.display='none';
+  if($('ns-photo')) $('ns-photo').value=''; if($('ns-photo-cam')) $('ns-photo-cam').value='';
+  nsSuppPhoto = s.photo||null; suppScanResult=null;
+  $('ns-def-tog').classList.toggle('on', !!s.defaultChecked);
+  $('ns-crit-tog').classList.toggle('on', !!s.critical);
+  $('ns-def-row').style.display = s.freq==='occasional'?'none':'block';
+  document.querySelectorAll('#m-supp .chip[data-time]').forEach(c=>c.classList.toggle('act',c.dataset.time===s.time));
+  document.querySelectorAll('#m-supp .fopt').forEach(c=>c.classList.toggle('act',c.dataset.freq===s.freq));
+  renderSuppNutrientInputs(s.nutrients||{});
+  closeModal('m-supp-detail');
   openModal('m-supp');
 }
 function selSuppTime(el){el.closest('.fg').querySelectorAll('.chip').forEach(c=>c.classList.remove('act'));el.classList.add('act');}
@@ -1903,28 +1806,51 @@ async function runSuppScan() {
   const apiKey=ls('apiKey'); if(!apiKey){toast('API kľúč chýba — nastav ho v Nastaveniach','err');return;}
   const btn=$('ns-scan-btn'); btn.textContent='⏳ Analyzujem...'; btn.disabled=true;
   try {
-    const content=[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:nsSuppPhoto.split(',')[1]}},{type:'text',text:'Analyzuj etiketu suplementu. Vráť IBA JSON: {"name":"","dose":"","active":"","time":"morning"} kde time je morning/evening/meal/anytime.'}];
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:300,messages:[{role:'user',content}]})});
+    const content=[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:nsSuppPhoto.split(',')[1]}},{type:'text',text:'Analyzuj etiketu suplementu. Vráť IBA JSON (žiadny iný text): {"name":"","doseQty":1,"doseUnit":"kapsula","active":"","time":"morning","nutrients":{"vitd":0,"omega3":0,"magnesium":0,"calcium":0,"iron":0,"potassium":0,"vitc":0,"protein":0,"kcal":0}}. "time" je morning/evening/meal/anytime. "doseQty" je počet kapsúl/kusov v JEDNEJ odporúčanej dávke. "nutrients" sú hodnoty NA 1 KAPSULU/KUS (nie na celú dávku) v mg, IU pre vitd, g pre protein/kcal — 0 ak látka nie je na etikete.'}];
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:400,messages:[{role:'user',content}]})});
     const data=await resp.json(); if(data.error)throw new Error(data.error.message);
     suppScanResult=JSON.parse(data.content?.find(c=>c.type==='text')?.text.replace(/```json|```/g,'').trim()||'{}');
-    $('ns-result-body').innerHTML=`<b>${suppScanResult.name||'?'}</b><br><span style="color:var(--t2)">${suppScanResult.dose||''}</span>${suppScanResult.active?`<br><span style="font-size:11px;color:var(--t2)">${suppScanResult.active}</span>`:''}`;
+    const n=suppScanResult.nutrients||{}, nutLine=SUPP_NUTRIENT_FIELDS.filter(f=>n[f.k]).map(f=>`${f.l} ${n[f.k]}${f.u}`).join(' · ');
+    $('ns-result-body').innerHTML=`<b>${suppScanResult.name||'?'}</b><br><span style="color:var(--t2)">${suppScanResult.doseQty||1} ${suppScanResult.doseUnit||''}</span>${nutLine?`<br><span style="font-size:11px;color:var(--t2)">${nutLine} (na 1 ks)</span>`:''}`;
     $('ns-result').style.display='block';
   } catch(e){toast('AI chyba: '+e.message,'err');}
   btn.textContent='🤖 Analyzovať znova'; btn.disabled=false;
 }
-function acceptSuppScan(){if(!suppScanResult)return;$('ns-name').value=suppScanResult.name||'';$('ns-dose').value=suppScanResult.dose||'';$('ns-active').value=suppScanResult.active||'';document.querySelectorAll('#m-supp .chip[data-time]').forEach(c=>c.classList.toggle('act',c.dataset.time===suppScanResult.time));$('ns-result').style.display='none';toast('AI návrh použitý ✓');}
+function acceptSuppScan(){
+  if(!suppScanResult)return;
+  $('ns-name').value=suppScanResult.name||'';
+  $('ns-doseqty').value=suppScanResult.doseQty||1;
+  $('ns-doseunit').value=suppScanResult.doseUnit||'';
+  $('ns-active').value=suppScanResult.active||'';
+  document.querySelectorAll('#m-supp .chip[data-time]').forEach(c=>c.classList.toggle('act',c.dataset.time===suppScanResult.time));
+  renderSuppNutrientInputs(suppScanResult.nutrients||{});
+  $('ns-result').style.display='none'; toast('AI návrh použitý ✓');
+}
 function saveSupp(){
   const name=$('ns-name').value.trim(); if(!name){toast('Zadaj názov','err');return;}
   const tc=document.querySelector('#m-supp .chip[data-time].act'), fc=document.querySelector('#m-supp .fopt.act');
-  const s={id:gid(),name,dose:$('ns-dose').value.trim()||'—',active:$('ns-active').value.trim()||'',time:tc?.dataset.time||'morning',freq:fc?.dataset.freq||'daily',critical:$('ns-crit-tog').classList.contains('on'),defaultChecked:$('ns-def-tog').classList.contains('on'),photo:nsSuppPhoto};
-  const list=getSupps(); list.push(s); saveSupps(list);
-  if(s.defaultChecked){const checks=getChecks(TODAY);checks[s.id]=true;saveChecks(TODAY,checks);}
+  const doseQty=+$('ns-doseqty').value||1, doseUnit=$('ns-doseunit').value.trim();
+  const nutrients={}; SUPP_NUTRIENT_FIELDS.forEach(f=>{ nutrients[f.k]=+($('ns-nut-'+f.k).value)||0; });
+  const base={name,dose:(doseQty+' '+doseUnit).trim(),doseQty,doseUnit,active:$('ns-active').value.trim()||'',time:tc?.dataset.time||'morning',freq:fc?.dataset.freq||'daily',critical:$('ns-crit-tog').classList.contains('on'),defaultChecked:$('ns-def-tog').classList.contains('on'),photo:nsSuppPhoto,nutrients};
+  const list=getSupps();
+  if(editingSuppId){
+    const idx=list.findIndex(x=>x.id===editingSuppId);
+    if(idx>-1) list[idx]={...list[idx],...base};
+    saveSupps(list);
+    if(base.defaultChecked){const checks=getChecks(TODAY);checks[editingSuppId]=true;saveChecks(TODAY,checks);}
+  } else {
+    const s={id:gid(),...base};
+    list.push(s); saveSupps(list);
+    if(s.defaultChecked){const checks=getChecks(TODAY);checks[s.id]=true;saveChecks(TODAY,checks);}
+  }
+  editingSuppId=null;
   closeModal('m-supp'); nsSuppPhoto=null; suppScanResult=null;
-  renderSupps(); renderSettingSuppList(); toast(name+' uložený ✓');
+  renderSupps(); renderSettingSuppList(); renderToday(); toast(name+' uložený ✓');
 }
 function openSuppDetail(id){
   const s=getSupps().find(x=>x.id===id); if(!s) return;
   const checks=getChecks(TODAY), chk=!!checks[s.id];
+  const nutLine=SUPP_NUTRIENT_FIELDS.filter(f=>(s.nutrients||{})[f.k]).map(f=>`${f.l} ${s.nutrients[f.k]}${f.u}`).join(' · ');
   $('supp-detail-body').innerHTML=`
     <div style="display:flex;align-items:center;gap:13px;margin-bottom:14px">
       <div class="sph" style="width:52px;height:52px;border-radius:var(--rs)">${s.photo?`<img src="${s.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--rs)">`:`<span style="font-size:26px">${suppEmoji(s)}</span>`}</div>
@@ -1933,11 +1859,13 @@ function openSuppDetail(id){
     <div class="inset" style="margin-bottom:13px">
       <div class="row"><span style="color:var(--t1)">Dávka</span><span style="font-weight:600">${s.dose}</span></div>
       ${s.active?`<div class="row"><span style="color:var(--t1)">Aktívna látka</span><span style="font-size:13px">${s.active}</span></div>`:''}
+      <div class="row"><span style="color:var(--t1)">Nutrienty (1 ks)</span><span style="font-size:12px;text-align:right;max-width:60%">${nutLine||'—'}</span></div>
       <div class="row"><span style="color:var(--t1)">Kritické</span><span style="${s.critical?'color:var(--re);font-weight:600':'color:var(--t2)'}">${s.critical?'⚠ Áno':'Nie'}</span></div>
       <div class="row" style="border-bottom:none"><span style="color:var(--t1)">Predvolené</span><span style="color:var(--t2)">${s.defaultChecked?'✓ Áno':'Nie'}</span></div>
     </div>
     <div style="display:flex;gap:9px;margin-bottom:10px">
       <button class="btn ${chk?'bs':'bp'} bsm" style="flex:1" onclick="toggleSuppCheck(null,'${s.id}','${TODAY}');closeModal('m-supp-detail')">${chk?'○ Odznačiť':'✓ Odškrtnúť dnes'}</button>
+      <button class="btn bs bsm" style="flex:1" onclick="openEditSupp('${s.id}')">✏️ Upraviť</button>
     </div>
     <div style="display:flex;gap:9px">
       <button class="btn bd bsm" style="flex:1" onclick="delSupp('${s.id}');closeModal('m-supp-detail')">Vymazať</button>
@@ -1958,12 +1886,12 @@ function last30() { return Array.from({length:30},(_,i)=>{ const d=new Date(now)
 
 function renderHistChart() {
   const tgt=getTargets(), days=last7();
-  const max=Math.max(tgt.kcal*1.35, ...days.map(d=>calcTotals(getDayData(d).meals).kcal), 1800);
-  const total7=days.reduce((s,d)=>s+calcTotals(getDayData(d).meals).kcal,0);
+  const max=Math.max(tgt.kcal*1.35, ...days.map(d=>calcDayTotals(d).kcal), 1800);
+  const total7=days.reduce((s,d)=>s+calcDayTotals(d).kcal,0);
   const avg7=Math.round(total7/7);
   $('hist-avg-lbl').textContent=`Ø ${avg7} kcal/deň`;
   $('hist-chart').innerHTML=days.map(date=>{
-    const tot=calcTotals(getDayData(date).meals), kcal=tot.kcal;
+    const tot=calcDayTotals(date), kcal=tot.kcal;
     const h=Math.round((kcal/max)*76), dt=new Date(date+'T12:00:00');
     const col=kcal>tgt.kcal*1.08?'var(--re)':kcal>tgt.kcal*0.92?'var(--gr)':kcal>0?'var(--ye)':'var(--s3)';
     const isToday=date===TODAY;
@@ -1978,7 +1906,7 @@ function renderHistChart() {
 
 function renderChronicGap() {
   const tgt=getTargets(), days=last30();
-  const gapDays=days.filter(d=>{const day=getDayData(d);return day.meals.length&&calcTotals(day.meals).kcal<tgt.kcal*0.7;}).length;
+  const gapDays=days.filter(d=>{const day=getDayData(d);return day.meals.length&&calcDayTotals(d).kcal<tgt.kcal*0.7;}).length;
   const cont=$('hist-chronic');
   if(gapDays>=14) cont.innerHTML=`<div class="ab ad" style="margin-bottom:10px">⚠ Chronický deficit: ${gapDays} dní za 30 dní pod 70% cieľa! Zvýš príjem.</div>`;
   else if(gapDays>=7) cont.innerHTML=`<div class="ab aw" style="margin-bottom:10px">Pozor: ${gapDays} dní s veľkým deficitom za 30 dní.</div>`;
@@ -1988,7 +1916,7 @@ function renderChronicGap() {
 function renderWeeklyAvg() {
   const tgt=getTargets(), days=last7();
   let tot={kcal:0,protein:0,carbs:0,fat:0}, cnt=0;
-  days.forEach(d=>{const day=getDayData(d);if(day.meals.length){const t=calcTotals(day.meals);Object.keys(tot).forEach(k=>tot[k]+=t[k]);cnt++;}});
+  days.forEach(d=>{const day=getDayData(d);if(day.meals.length){const t=calcDayTotals(d);Object.keys(tot).forEach(k=>tot[k]+=t[k]);cnt++;}});
   const cont=$('hist-weekly-avg');
   if(!cnt){cont.innerHTML='<div style="color:var(--t2);font-size:13px">Žiadne dáta za posledných 7 dní</div>';return;}
   const avg={}; Object.keys(tot).forEach(k=>avg[k]=Math.round(tot[k]/cnt));
@@ -2010,7 +1938,7 @@ function renderCalendar() {
   for(let i=0;i<startDay;i++) cells+=`<div></div>`;
   for(let d=1;d<=days;d++){
     const date=`${y}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const day=getDayData(date), tot=calcTotals(day.meals), kcal=tot.kcal;
+    const day=getDayData(date), tot=calcDayTotals(date), kcal=tot.kcal;
     const hasData=day.meals.length>0; const p=hasData?kcal/tgt.kcal:0;
     const bg=!hasData?'transparent':p>1.08?'rgba(244,112,112,.35)':p>0.92?'rgba(61,220,132,.35)':p>0.7?'rgba(245,197,66,.35)':'rgba(244,112,112,.18)';
     const isT=date===TODAY;
@@ -2019,7 +1947,7 @@ function renderCalendar() {
   $('cal-grid').innerHTML=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px">${['Po','Ut','St','Št','Pi','So','Ne'].map(d=>`<div style="text-align:center;font-size:9px;font-weight:700;color:var(--t2);padding:3px 0">${d}</div>`).join('')}</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px">${cells}</div>`;
 }
 function showDayDetail(date) {
-  const day=getDayData(date), tot=calcTotals(day.meals), tgt=getTargets();
+  const day=getDayData(date), tot=calcDayTotals(date), tgt=getTargets();
   const cont=$('hist-day-detail');
   cont.innerHTML=`<div class="card"><h2 style="margin-bottom:10px">${fmtDateSk(date)}</h2>
     <div class="row"><span style="color:var(--t1)">Kalórie</span><span style="font-weight:700;color:${tot.kcal>tgt.kcal?'var(--re)':'var(--tx)'}">${Math.round(tot.kcal)} / ${tgt.kcal} kcal</span></div>
@@ -2033,7 +1961,7 @@ async function genRecommendations() {
   const apiKey=ls('apiKey'); if(!apiKey){toast('API kľúč chýba — nastav ho v Nastaveniach','err');return;}
   const btn=$('reco-btn'); btn.textContent='⏳...'; btn.disabled=true;
   $('reco-content').innerHTML='<div style="color:var(--t2)">Analyzujem posledných 7 dní…</div>';
-  const tgt=getTargets(), summary=last7().map(d=>{const t=calcTotals(getDayData(d).meals);return`${d}: ${Math.round(t.kcal)}kcal B${Math.round(t.protein)}g S${Math.round(t.carbs)}g T${Math.round(t.fat)}g Ω3${Math.round(t.omega3)}mg`;}).join('\n');
+  const tgt=getTargets(), summary=last7().map(d=>{const t=calcDayTotals(d);return`${d}: ${Math.round(t.kcal)}kcal B${Math.round(t.protein)}g S${Math.round(t.carbs)}g T${Math.round(t.fat)}g Ω3${Math.round(t.omega3)}mg D${Math.round(t.vitd)}IU`;}).join('\n');
   try {
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:800,messages:[{role:'user',content:`Si nutričný poradca. Analyzuj 7-dňový log pre ženu (48r, 79kg, cieľ 70kg, perimenopauza, CV riziko, migrény). Ciele: ${tgt.kcal}kcal B${tgt.protein}g S${tgt.carbs}g T${tgt.fat}g Ω3 ${tgt.omega3}mg.\nLog:\n${summary}\n\nDaj 3-5 konkrétnych odporúčaní po slovensky. Buď stručný a praktický.`}]})});
     const data=await resp.json(); if(data.error)throw new Error(data.error.message);
@@ -2044,7 +1972,7 @@ async function genRecommendations() {
 }
 
 function exportData() {
-  const data={v:'2.0',exported:new Date().toISOString(),profile:getProfile(),targets:getTargets(),micros:getMicros(),products:getProducts(),recipes:getRecipes(),supps:getSupps(),weightLog:getWeightLog(),days:{}};
+  const data={v:'2.0',exported:new Date().toISOString(),profile:getProfile(),targets:getTargets(),micros:getMicros(),products:getProducts(),supps:getSupps(),weightLog:getWeightLog(),days:{}};
   for(let i=0;i<90;i++){const d=new Date(now);d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const day=ls('day_'+k);if(day)data.days[k]=day;const chk=ls('chk_'+k);if(chk)data['chk_'+k]=chk;}
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`mirka-${TODAY}.json`; a.click(); URL.revokeObjectURL(url); toast('Dáta exportované ✓');
@@ -2056,7 +1984,7 @@ function importData(event) {
       const d=JSON.parse(e.target.result);
       if(d.profile)lw('profile',d.profile); if(d.targets)lw('targets',d.targets);
       if(d.micros)lw('micros',d.micros); if(d.products)lw('products',d.products);
-      if(d.recipes)lw('recipes',d.recipes); if(d.supps)saveSupps(d.supps);
+      if(d.supps)saveSupps(d.supps);
       if(d.weightLog)saveWeightLog(d.weightLog);
       if(d.days)Object.entries(d.days).forEach(([k,v])=>lw('day_'+k,v));
       Object.keys(d).filter(k=>k.startsWith('chk_')).forEach(k=>lw(k,d[k]));
@@ -2190,21 +2118,28 @@ function renderSettingSuppList(){
   const cont=$('supp-settings'); if(!cont) return;
   const supps=getSupps();
   if(!supps.length){cont.innerHTML='<div style="color:var(--t2);font-size:13px">Žiadne suplementy.</div>';return;}
-  cont.innerHTML=supps.map(s=>`<div style="padding:9px 0;border-bottom:1px solid var(--b0)">
+  cont.innerHTML=supps.map(s=>{
+    const nutLine=SUPP_NUTRIENT_FIELDS.filter(f=>(s.nutrients||{})[f.k]).map(f=>`${f.l} ${s.nutrients[f.k]}${f.u}`).join(' · ');
+    return `<div style="padding:9px 0;border-bottom:1px solid var(--b0)">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
       <div style="font-size:14px;font-weight:600">${suppEmoji(s)} ${s.name}</div>
-      <span class="stb ${TIME_CSS[s.time]||'ta'}">${TIME_LABEL[s.time]}</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="stb ${TIME_CSS[s.time]||'ta'}">${TIME_LABEL[s.time]}</span>
+        <button class="bic" style="width:26px;height:26px;font-size:12px" onclick="openEditSupp('${s.id}')">✏️</button>
+      </div>
     </div>
+    <div style="font-size:12px;color:var(--t2);margin-bottom:${nutLine?'4px':'0'}">${s.dose}${s.active?' · '+s.active:''}</div>
+    ${nutLine?`<div style="font-size:11px;color:var(--t1);margin-bottom:6px">${nutLine} <span style="color:var(--t2)">(na 1 ks)</span></div>`:''}
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <span style="font-size:12px;color:var(--t2);flex:1">${s.dose}</span>
-      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;margin:0;font-size:12px;color:var(--t2)">
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;margin:0;font-size:12px;color:var(--t2);flex:1">
         <div class="tog ${s.critical?'on':''}" style="width:32px;height:18px" onclick="toggleSuppSetting('${s.id}','critical',this)"></div>Kritické
       </label>
       <label style="display:flex;align-items:center;gap:5px;cursor:pointer;margin:0;font-size:12px;color:var(--t2)">
         <div class="tog ${s.defaultChecked?'on':''}" style="width:32px;height:18px" onclick="toggleSuppSetting('${s.id}','defaultChecked',this)"></div>Predvolené
       </label>
     </div>
-  </div>`).join('');
+  </div>`;
+  }).join('');
 }
 function toggleSuppSetting(id,field,el){const list=getSupps(),s=list.find(x=>x.id===id);if(!s)return;s[field]=!s[field];el.classList.toggle('on',s[field]);saveSupps(list);toast(`${s.name}: ${s[field]?'zapnuté':'vypnuté'}`);}
 
@@ -2245,7 +2180,6 @@ renderToday();
 renderSettings();
 // Seed data if empty
 if(!ls('products'))lw('products',deep(DEFAULT_PRODUCTS));
-if(!ls('recipes'))lw('recipes',deep(DEFAULT_RECIPES));
 if(!ls('supps'))saveSupps(deep(DEFAULT_SUPPS));
 </script>
 </body>
