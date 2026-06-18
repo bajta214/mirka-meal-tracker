@@ -944,6 +944,49 @@ function closeAll() {
 }
 
 // ══════════════════════════════════════════════
+// SUPPLEMENT PROFILE CONTEXT (pre AI prompty)
+// ══════════════════════════════════════════════
+const SUPP_PROFILE = `DOPLNKY VÝŽIVY (presné produkty, dávky a nutrienty):
+
+DENNÉ — RÁNO NALAČNO:
+- iProbio Allergic+ (probiotiká): 1 vrecúško pred jedlom
+
+DENNÉ — RAŇAJKY:
+- Warrior Advanced Omega-3 TG Strong: 3 softgely × (330 mg EPA + 220 mg DHA) = 990 mg EPA + 660 mg DHA/deň (triglyceridová forma)
+- Dr.Max Vitamin B Complex Forte: 1 tableta (B1 15mg, B2 15mg, B3 50mg, B5 25mg, B6 10mg, B7 500mcg) — ⚠️ NEOBSAHUJE B9 ani B12
+- Doctor's Best Vitamín D3: 1 softgel = 2 000 IU (50 mcg)
+- Warrior Vitamín K2 MK-7: 1 tableta = 100 mcg MK-7 (smeruje vápnik do kostí, chráni cievy)
+- Warrior Calcium Citrate: 1 tableta = 120 mg elem. Ca (štítok odporúča 3×/deň, aktuálne 1×/deň)
+- Natural Nutrition CoQ10: 1 kapsula (vegan, bez aditív) — brať s tukovým jedlom
+- Natural Nutrition MSM prášok: 2 odmerky = 4 000 mg organickej síry (kolagén, keratín, glutatión, protizápalové)
+
+DENNÉ — KEDYKOĽVEK:
+- Natural Nutrition Kreatín monohydrát (Lime Sorbet): 6 g/deň — sledovať hydratáciu min. 2,5 l/deň
+- NaMaximum WPC80 Whey Protein vanilla: 1 odmerka = 30 g (22,8 g bielkovín, 118 kcal) — nezarátava sa automaticky, len keď potvrdené
+
+DENNÉ — VEČER (striedanie):
+- Magnosolv: 1 vrecúško = ~342 mg Mg — ak chce piť pred spaním
+- 100% Chelated Magnesium: 1 kapsula = 100 mg Mg bisglycinát — ak nechce piť tekutinu
+- Obe formy: neurologická indikácia (migréna profylaxia + LS svalový spazmus), nesmie sa vynechať
+
+PRÍLEŽITOSTNÉ (nie denne):
+- GS Vitamín C + šípky: 1 tableta = 1 000 mg vit. C
+- Hydrolysed Marine Collagen + Hyaluronic Acid: 1 porcia (~8 g proteínu, ~36 kcal)
+- NaMaximum Inosifol: 1 odmerka = 4 200 mg myo-inozitol + 400 mcg Quatrefolic (aktívny B9/folát)
+
+MEDZERY V SUPLEMENTÁCII:
+- B12 — v profile chýba; kryť z mäsa/rýb/vajec/mliečnych výrobkov
+- B9 (folát) — len príležitostne cez Inosifol (Quatrefolic); kryť z listovej zeleniny
+- Železo — nenie suplementované (ferritín 54,8 µg/l 04/2026, v norme); kryť diétou
+
+SYNERGIE (dôležité pre odporúčania):
+- D3 + K2 + Ca = "kostná trojica" (D3 absorbuje Ca → K2 smeruje do kostí); kľúčové pri perimenopauze
+- Omega-3 (990/660 EPA/DHA) — vysoká dávka, znižovať zápalové potraviny (omega-6, UPF)
+- CoQ10 — brať s tukovým jedlom; synergický s omega-3 a K2 pre KV podporu
+- Kolagén + vit. C = kĺbový protokol (pri príležitostnom užití kombinovať)
+- Magnézium (striedanie foriem) — chelát má glycín s relaxačným efektom na CNS`;
+
+// ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
 const SCRIDS = ['today','log','products','supps','history','settings'];
@@ -1061,10 +1104,11 @@ const DEFAULT_SUPPS = [
   {id:'s7',name:'Vitamín K2',dose:'1 tableta',doseQty:1,doseUnit:'tableta',active:'Warrior K2, 100µg MK-7',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
   {id:'s8',name:'Vápnik (Citrát)',dose:'1 tableta',doseQty:1,doseUnit:'tableta',active:'Warrior Calcium Citrate, 120mg elem. Ca/tabletu (štítok odporúča 3×/deň)',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:120,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
   {id:'s9',name:'MSM (organická síra)',dose:'2 odmerky (4g)',doseQty:2,doseUnit:'odmerky (á 2g)',active:'Natural Nutrition, 99.85% čistota, 4000mg MSM denne ráno',time:'morning',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
-  {id:'s10',name:'Kolagén + Hyaluronát',dose:'1 porcia (prášok)',doseQty:1,doseUnit:'porcia',active:'Hydrolysed Marine Collagen + Hyaluronic Acid — drink, príležitostne',time:'morning',freq:'occasional',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s10',name:'Kolagén morský (+ kyselina hyalurónová)',dose:'1 porcia (prášok)',doseQty:1,doseUnit:'porcia',active:'Hydrolysed Marine Collagen + Hyaluronic Acid — pokožka, kĺby, hydratácia; nie denne',time:'morning',freq:'occasional',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:8,kcal:36}},
   {id:'s11',name:'Inosifol (Inozitol + Quatrefolic)',dose:'1 odmerka (4.2g)',doseQty:1,doseUnit:'odmerka',active:'4200mg myo-inozitol + 400µg Quatrefolic (aktívny folát) — príležitostne ráno',time:'morning',freq:'occasional',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
   {id:'s12',name:'WPC80 Whey Protein',dose:'1 odmerka (30g)',doseQty:1,doseUnit:'odmerka',active:'NaMaximum, vanilla — kedykoľvek; nezarátavať automaticky, potvrdiť pri logovaní',time:'anytime',freq:'daily',critical:false,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:22.8,kcal:118}},
-  {id:'s13',name:'Horčík (Magnosolv / Chelát Mg)',dose:'1 vrecko / 1 kapsula',doseQty:1,doseUnit:'vrecko alebo kapsula',active:'Striedanie: Magnosolv 342mg Mg (vrecko) ALEBO Chelated Mg 100mg (kapsula) — neurologická indikácia (migréna, LS spazmus), nesmie sa vynechať. Nutričná hodnota nastavená na Magnosolv (342mg) — pri Chelated Mg uprav ručne na 100mg.',time:'evening',freq:'daily',critical:true,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:342,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s13',name:'Magnosolv (Mg — ak pijem pred spaním)',dose:'1 vrecúško',doseQty:1,doseUnit:'vrecúško',active:'~342 mg elem. Mg — šumivý granulát; striedať s Chelated Mg kapsulou (neurologická indikácia MUDr. Hakošová — migréna, LS spazmus)',time:'evening',freq:'daily',critical:true,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:342,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
+  {id:'s15',name:'Chelated Mg (Mg — ak nepijem pred spaním)',dose:'1 kapsula',doseQty:1,doseUnit:'kapsula',active:'100 mg Mg bisglycinát — chelátová forma, bez laxatívneho efektu; glycín má relaxačný efekt na CNS; striedať s Magnosolv',time:'evening',freq:'daily',critical:true,defaultChecked:false,photo:null,nutrients:{omega3:0,vitd:0,magnesium:100,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
   {id:'s14',name:'Kreatín monohydrát',dose:'1 odmerka (6g)',doseQty:1,doseUnit:'odmerka',active:'Natural Nutrition, Lime Sorbet, 1×6g/deň — kedykoľvek',time:'anytime',freq:'daily',critical:false,defaultChecked:true,photo:null,nutrients:{omega3:0,vitd:0,magnesium:0,calcium:0,iron:0,potassium:0,vitc:0,protein:0,kcal:0}},
 ];
 
@@ -1357,8 +1401,15 @@ async function runTextMeal() {
 
   const prompt = `Si nutričná kalkulačka. Používateľka zadala jedlo prirodzeným jazykom. Rozlož ho na ingrediencie, vypočítaj makrá a mikros.
 
+PROFIL POUŽÍVATEĽKY: Miroslava, 48r, 177cm, 79kg, perimenopauza, CV riziko.
+
 KNIŽNICA PRODUKTOV (použi ak sa ingrediencia zhoduje — prepočítaj na zadané gramáže):
 ${prodList}
+
+SUPLEMENTY KTORÉ MIRKA DENNE BERIE (tieto NEZARÁTAVAJ do jedla — sú tracked samostatne):
+Omega-3 990/660 EPA/DHA, D3 2000 IU, K2 100mcg MK-7, Ca 120mg, CoQ10, B-komplex (bez B9/B12), MSM 4g, Probiotiká, Kreatín 6g, Mg večer.
+Príležitostne: Vitamín C 1000mg, Kolagén, Inosifol.
+WPC80 proteín (22,8g B / 30g prášku) — ak ho zmieni v popise, zarátaj.
 
 ZADANIE POUŽÍVATEĽKY:
 "${desc}"
@@ -1432,13 +1483,18 @@ async function runAIMeal() {
     if(photoFile&&desc) contextParts.push(`Foto jedla je priložené. Dodatočný popis od používateľky: "${desc}"`);
     else if(photoFile) contextParts.push('Odhadni jedlo z priloženého foto.');
     else contextParts.push(`Popis jedla: "${desc}"`);
-    const prompt = `${contextParts[0]}
+    const photoDesc = photoFile&&desc ? `Foto jedla je priložené. Dodatočný popis: "${desc}"` : photoFile ? 'Odhadni jedlo z priloženého foto.' : `Popis jedla: "${desc}"`;
+    const prompt = `Odhadni výživové hodnoty jedla pre Miroslavu (48r, 177cm, 79kg, perimenopauza, CV riziko).
+${photoDesc}
 
-Odhadni výživové hodnoty pre ženu (48r, 79kg, perimenopauza). Ak je zadaný popis aj foto, uprednostni foto ale využi popis pre spresnenie porcie alebo názvu.
-DÔLEŽITÉ — ak je na fotke viditeľná nutričná tabuľka/etiketa (napr. "Výživové údaje", "ø/100g", "Nutrition facts") s presnými číslami: TIETO ČÍSLA MAJÚ PRIORITU. Neodhaduj všeobecne z databáz, ak sú presné dáta na fotke viditeľné — prepočítaj ich na gramáž zadanú v popise (napr. "180 g") alebo na gramáž odhadnutú z fotky. Ak fotka/popis obsahuje viac položiek (napr. základ + ovocie navyše), pripočítaj zvyšné položky podľa bežných databáz, ale položku s viditeľnou tabuľkou počítaj presne podľa tabuľky.
-Vráť IBA JSON objekt (bez markdown, bez komentárov):
+SUPLEMENTY KTORÉ MIRKA DENNE BERIE (tieto NEZARÁTAVAJ do jedla — tracked samostatne):
+Omega-3 990/660 EPA/DHA, D3 2000 IU, K2 100mcg, Ca 120mg, CoQ10, B-komplex (bez B9/B12), MSM 4g, Probiotiká, Kreatín 6g, Mg večer (~342mg Magnosolv alebo 100mg Chelated Mg).
+Ak je na fotke/v popise WPC80 proteínový prášok (vanilla), zarátaj ho (22,8g B / 30g prášku).
+
+DÔLEŽITÉ — ak je na fotke viditeľná nutričná tabuľka/etiketa: TIETO ČÍSLA MAJÚ PRIORITU. Prepočítaj na zadanú alebo odhadnutú gramáž.
+Vráť IBA JSON objekt (bez markdown):
 {"name":"","amount":null,"kcal":0,"protein":0,"carbs":0,"fat":0,"fiber":0,"satfat":0,"sugar":0,"salt":0,"iron":0,"calcium":0,"magnesium":0,"potassium":0,"omega3":0,"vitc":0,"vitd":0,"cholesterol":0}
-Všetky číselné hodnoty musia byť čísla. "name" má byť slovenský názov jedla.`;
+Všetky číselné hodnoty musia byť čísla. "name" = slovenský názov jedla.`;
     content.push({type:'text',text:prompt});
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:600,messages:[{role:'user',content}]})});
     if(!resp.ok) {
@@ -1968,9 +2024,25 @@ async function genRecommendations() {
   const apiKey=ls('apiKey'); if(!apiKey){toast('API kľúč chýba — nastav ho v Nastaveniach','err');return;}
   const btn=$('reco-btn'); btn.textContent='⏳...'; btn.disabled=true;
   $('reco-content').innerHTML='<div style="color:var(--t2)">Analyzujem posledných 7 dní…</div>';
-  const tgt=getTargets(), summary=last7().map(d=>{const t=calcDayTotals(d);return`${d}: ${Math.round(t.kcal)}kcal B${Math.round(t.protein)}g S${Math.round(t.carbs)}g T${Math.round(t.fat)}g Ω3${Math.round(t.omega3)}mg D${Math.round(t.vitd)}IU`;}).join('\n');
+  const tgt=getTargets(), supps=getSupps();
+  const summary=last7().map(d=>{
+    const t=calcDayTotals(d);
+    const checks=getChecks(d);
+    const doneSupps=supps.filter(s=>checks[s.id]).map(s=>s.name.split(' (')[0]).join(', ');
+    return`${d}: ${Math.round(t.kcal)}kcal B${Math.round(t.protein)}g S${Math.round(t.carbs)}g T${Math.round(t.fat)}g Ω3${Math.round(t.omega3)}mg D${Math.round(t.vitd)}IU Mg${Math.round(t.magnesium)}mg Ca${Math.round(t.calcium)}mg${doneSupps?` | Supl: ${doneSupps}`:''}`;
+  }).join('\n');
   try {
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:800,messages:[{role:'user',content:`Si nutričný poradca. Analyzuj 7-dňový log pre ženu (48r, 79kg, cieľ 70kg, perimenopauza, CV riziko, migrény). Ciele: ${tgt.kcal}kcal B${tgt.protein}g S${tgt.carbs}g T${tgt.fat}g Ω3 ${tgt.omega3}mg.\nLog:\n${summary}\n\nDaj 3-5 konkrétnych odporúčaní po slovensky. Buď stručný a praktický.`}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,messages:[{role:'user',content:`Si personalizovaný nutričný poradca. Analyzuj 7-dňový log stravy a suplementácie.
+
+PROFIL: Miroslava, 48r, 177cm, 79kg, cieľ 70kg, perimenopauza, CV riziko v rodine, migrény, LS svalový spazmus.
+Nutričné ciele: ${tgt.kcal}kcal · B${tgt.protein}g · S${tgt.carbs}g · T${tgt.fat}g · Ω3 ${tgt.omega3}mg
+
+${SUPP_PROFILE}
+
+7-DŇOVÝ LOG (strava + suplementy):
+${summary}
+
+Daj 3-5 konkrétnych, personalizovaných odporúčaní po slovensky. Zohľadni synergie medzi suplementmi a stravou, medzery v pokrytí živín (B12, B9, železo z potravy), vysokú dávku Omega-3 a nutnosť večerného horčíka. Buď stručný a praktický — žiadna teória, len konkrétne akcie.`}]})});
     const data=await resp.json(); if(data.error)throw new Error(data.error.message);
     const text=data.content?.find(c=>c.type==='text')?.text||'Nepodarilo sa získať odporúčania.';
     $('reco-content').innerHTML=`<div style="font-size:13px;line-height:1.75;color:var(--tx)">${text.replace(/\n/g,'<br>')}</div>`;
