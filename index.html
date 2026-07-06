@@ -1303,8 +1303,9 @@ function renderToday() {
   const alerts = [];
   const checks = getChecks(TODAY);
   const supps = getSupps();
-  if(tot.omega3 < (tgt.omega3||1500)*0.5 && !checks[supps.find(s=>s.name==='Omega-3')?.id]) alerts.push({t:'ad',m:'⚠ Omega-3 kriticky nízke — nezabudni na doplnok!'});
-  if(!checks[supps.find(s=>s.name==='Horčík')?.id]) alerts.push({t:'aw',m:'💊 Horčík (večer) — nezabudni!'});
+  if(tot.omega3 < (tgt.omega3||1500)*0.5 && !checks[supps.find(s=>s.name.toLowerCase().includes('omega'))?.id]) alerts.push({t:'ad',m:'⚠ Omega-3 kriticky nízke — nezabudni na doplnok!'});
+  const mgTaken=supps.filter(s=>/magnosolv|chelated|horčík|mg /i.test(s.name)).some(s=>checks[s.id]);
+  if(!mgTaken) alerts.push({t:'aw',m:'💊 Horčík (večer) — Magnosolv alebo Chelated Mg, nezabudni!'});
   const dinnerKcal = day.meals.filter(m=>m.mealType==='dinner').reduce((s,m)=>s+(m.kcal||0),0);
   if(dinnerKcal>550) alerts.push({t:'ad',m:`🌙 Večera ${Math.round(dinnerKcal)} kcal — refluxný limit 550 kcal!`});
   const hr = now.getHours();
